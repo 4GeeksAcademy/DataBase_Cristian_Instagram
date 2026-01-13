@@ -41,3 +41,43 @@ class Post(db.Model):
             "link": self.link
         }
 
+class Interactions(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    liked: Mapped[bool] = mapped_column(Boolean, default=False)
+    comment: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    post_id: Mapped[int] = mapped_column(ForeignKey("post.id"))
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "liked": self.liked,
+            "shared": self.comment
+        }
+    
+class Follows(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+
+    follower_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    followed_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "follower_id": self.follower_id,
+            "followed_id": self.followed_id
+        }
+    
+class Messages(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    message: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    toMessage_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "message": self.message
+        }
