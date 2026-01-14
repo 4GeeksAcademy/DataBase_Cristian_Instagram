@@ -13,7 +13,10 @@ class User(db.Model):
     password: Mapped[str] = mapped_column(nullable=False)
     username: Mapped[str] = mapped_column(nullable=False)
 
-    children: Mapped[List["Post"]] = relationship(back_populates="user")
+    post: Mapped[List["Post"]] = relationship(back_populates="user")
+    interactions: Mapped[List["Interactions"]] = relationship(back_populates="user")
+    follows: Mapped[List["Follows"]] = relationship(back_populates="user")
+    message: Mapped[List["Messages"]] = relationship(back_populates="user")
 
 
     def serialize(self):
@@ -31,7 +34,7 @@ class Post(db.Model):
     description: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     link: Mapped[str] = mapped_column(nullable=False)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     user: Mapped["User"] = relationship(back_populates="post")
 
     def serialize(self):
@@ -46,8 +49,8 @@ class Interactions(db.Model):
     liked: Mapped[bool] = mapped_column(Boolean, default=False)
     comment: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    post_id: Mapped[int] = mapped_column(ForeignKey("post.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    post_id: Mapped[int] = mapped_column(ForeignKey("post.id"), nullable=False)
 
     def serialize(self):
         return {
@@ -59,8 +62,8 @@ class Interactions(db.Model):
 class Follows(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    follower_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    followed_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    follower_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    followed_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
 
     def serialize(self):
         return {
@@ -73,8 +76,8 @@ class Messages(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     message: Mapped[str] = mapped_column(String(250), unique=True, nullable=False)
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    toMessage_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+    to_message_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     
     def serialize(self):
         return {
