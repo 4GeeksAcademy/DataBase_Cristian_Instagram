@@ -35,6 +35,7 @@ class Post(db.Model):
     link: Mapped[str] = mapped_column(nullable=False)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+
     user: Mapped["User"] = relationship(back_populates="post")
     interactions: Mapped[List["Interactions"]] = relationship(back_populates="post")
 
@@ -54,6 +55,9 @@ class Interactions(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     post_id: Mapped[int] = mapped_column(ForeignKey("post.id"), nullable=False)
 
+    user: Mapped["User"] = relationship(back_populates="user")
+    post: Mapped["Post"] = relationship(back_populates="post")
+
     def serialize(self):
         return {
             "id": self.id,
@@ -66,6 +70,10 @@ class Follows(db.Model):
 
     follower_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     followed_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+
+    user_follower: Mapped["User"] = relationship(back_populates="user")
+    user_followed: Mapped["User"] = relationship(back_populates="user")
+
 
     def serialize(self):
         return {
@@ -80,6 +88,9 @@ class Messages(db.Model):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     to_message_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
+
+    user: Mapped["User"] = relationship(back_populates="messages")
+    user_to_message: Mapped["User"] = relationship(back_populates="messages")
     
     def serialize(self):
         return {
