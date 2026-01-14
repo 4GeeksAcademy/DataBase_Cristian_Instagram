@@ -36,6 +36,8 @@ class Post(db.Model):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False)
     user: Mapped["User"] = relationship(back_populates="post")
+    interactions: Mapped[List["Interactions"]] = relationship(back_populates="post")
+
 
     def serialize(self):
         return {
